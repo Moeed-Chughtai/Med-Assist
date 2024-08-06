@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   button: {
+    marginTop: 10,
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 20,
@@ -37,7 +38,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#007bff',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
   },
   selectedButtonText: {

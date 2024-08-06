@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import ToggleButton from './ToggleButton';
 
 const ImageUploader = () => {
   const [imageUri, setImageUri] = useState('');
+  const [selectedOption, setSelectedOption] = useState('');
+  const toggleOptions = ['Brain Scan', 'Chest X-ray', 'Blood Test'];
 
   const handleImagePick = async () => {
     // Ask for permission to access media library
@@ -25,6 +28,11 @@ const ImageUploader = () => {
     }
   };
 
+  const handleCalculate = () => {
+    // Implement the calculate logic here
+    Alert.alert('Calculation Result', `Selected Option: ${selectedOption}`);
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Upload and Display Image</Text>
@@ -36,6 +44,14 @@ const ImageUploader = () => {
       ) : (
         <Text style={styles.noImageText}>No image selected</Text>
       )}
+      <ToggleButton
+        options={toggleOptions}
+        selected={selectedOption}
+        onSelect={(option) => setSelectedOption(option)}
+      />
+      <TouchableOpacity style={styles.calculateButton} onPress={handleCalculate}>
+        <Text style={styles.calculateButtonText}>Calculate</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -69,12 +85,25 @@ const styles = StyleSheet.create({
     width: 300,
     height: 300,
     marginTop: 20,
+    marginBottom: 20,
     borderRadius: 10,
   },
   noImageText: {
     fontSize: 16,
     color: '#555',
     marginTop: 20,
+  },
+  calculateButton: {
+    backgroundColor: '#28a745',
+    borderRadius: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    marginTop: 20,
+  },
+  calculateButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
 
