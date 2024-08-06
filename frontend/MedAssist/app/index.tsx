@@ -1,6 +1,6 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet, ScrollView } from 'react-native';
-import TreatmentDataEntry from '../components/TreatmentDataEntry'; // Adjust the path as necessary
+import SymptomDataEntry from '../components/SymptomDataEntry';
 
 const App = () => {
   // Function to handle form submission
@@ -11,7 +11,7 @@ const App = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <TreatmentDataEntry onSubmit={handleDataSubmit} />
+        <SymptomDataEntry onSubmit={handleDataSubmit} />
       </ScrollView>
     </SafeAreaView>
   );
