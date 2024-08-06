@@ -1,9 +1,20 @@
-import { View, Text } from 'react-native';
+import React from 'react';
+import { SafeAreaView, StyleSheet } from 'react-native';
+import DiseaseList from '../components/DiseaseList';
 
-export default function Home() {
-    return (
-        <View>
-            <Text>MedAssist</Text>
-        </View>
-    );
-}
+const App = () => {
+  return (
+    <SafeAreaView style={styles.container}>
+      <DiseaseList />
+    </SafeAreaView>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+});
+
+export default App;
