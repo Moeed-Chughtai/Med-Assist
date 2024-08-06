@@ -1,20 +1,28 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
-import { launchImageLibrary } from 'react-native-image-picker';
+import * as ImagePicker from 'expo-image-picker';
 
 const ImageUploader = () => {
   const [imageUri, setImageUri] = useState('');
 
-  const handleImagePick = () => {
-    launchImageLibrary({ mediaType: 'photo', quality: 1 }, (response) => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.errorCode) {
-        Alert.alert('Error', response.errorMessage);
-      } else {
-        setImageUri(response.assets[0].uri);
-      }
+  const handleImagePick = async () => {
+    // Ask for permission to access media library
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      Alert.alert('Permission Denied', 'Permission to access camera roll is required!');
+      return;
+    }
+
+    // Open image picker
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
     });
+
+    if (!result.canceled) {
+      setImageUri(result.assets[0].uri);
+    }
   };
 
   return (

@@ -1,17 +1,17 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet, ScrollView } from 'react-native';
-import TreatmentDataEntry from '../components/TreatmentDataEntry'; // Adjust the path as necessary
+import ImageUploader from '../components/ImageUploader'; // Adjust the path as necessary
 
 const App = () => {
-  // Function to handle form submission
-  const handleDataSubmit = (data) => {
-    console.log('Submitted Data:', data);
+  // Function to handle image upload
+  const handleImageUpload = (image) => {
+    console.log('Uploaded Image:', image);
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <TreatmentDataEntry onSubmit={handleDataSubmit} />
+        <ImageUploader onUpload={handleImageUpload} />
       </ScrollView>
     </SafeAreaView>
   );
