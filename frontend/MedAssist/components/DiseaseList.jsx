@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Card, Button } from 'react-native-elements';
-import DiseaseDataEntry from './DiseaseDataEntry'; // Make sure this file exists
 
 const diseases = [
   { id: '1', name: 'Cirrhosis', image: 'https://via.placeholder.com/100' },
@@ -33,7 +32,7 @@ const DiseaseList = ({ onDiseaseSelect }) => {
         <Button
           title="CHECK"
           buttonStyle={styles.button}
-          onPress={() => onDiseaseSelect(item)} // Trigger disease selection
+          onPress={() => onDiseaseSelect(item)}
         />
       </View>
     </Card>

@@ -24,7 +24,7 @@ const Footer = () => {
       </TouchableOpacity>
       <TouchableOpacity style={styles.menuButton}>
         <Image source={userIcon} style={styles.menuIcon} />
-        <Text style={styles.menuText}>Profile</Text>
+        <Text style={styles.menuText}>Account</Text>
       </TouchableOpacity>
     </View>
   );

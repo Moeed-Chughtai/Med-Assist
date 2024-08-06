@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Card } from 'react-native-elements';
-import ToggleButton from './ToggleButton'; // Make sure to adjust the path
+import ToggleButton from './ToggleButton';
 
 const diseaseFields = {
   'Diabetes': [
