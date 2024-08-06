@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import menuIcon from '../assets/icons/menu.png';
 import notificationIcon from '../assets/icons/notification.png';
 
