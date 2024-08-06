@@ -1,6 +1,6 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet, ScrollView } from 'react-native';
-import Diagnosis from './Diagnosis';
+import Image from './Image';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
@@ -8,7 +8,7 @@ const App = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Header onMenuPress={undefined} onNotificationPress={undefined} />
-      <Diagnosis />
+      <Image />
       <Footer />
     </SafeAreaView>
   );

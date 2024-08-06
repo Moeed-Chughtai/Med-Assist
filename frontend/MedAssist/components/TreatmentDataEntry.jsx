@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { Card } from 'react-native-elements';
 import { Picker } from '@react-native-picker/picker';
-import ToggleButton from './ToggleButton'; // Make sure to adjust the path
+import ToggleButton from './ToggleButton';
 
 const diagnosisOptions = [
   'Diabetes',
@@ -126,7 +126,6 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 15,
-    backgroundColor: '#f9f9f9',
   },
   card: {
     borderRadius: 12,
