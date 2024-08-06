@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, TextInput, ScrollView } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { Card } from 'react-native-elements';
 import { Picker } from '@react-native-picker/picker';
+import ToggleButton from './ToggleButton'; // Make sure to adjust the path
 
 const diagnosisOptions = [
   'Diabetes',
@@ -23,30 +24,60 @@ const allergyOptions = [
   // Add more allergy options here
 ];
 
-const PatientDataEntry = ({ onSubmit }) => {
-  const [diagnosis, setDiagnosis] = useState('');
-  const [allergies, setAllergies] = useState('');
-  const [customAllergy, setCustomAllergy] = useState('');
+const genderOptions = ['Male', 'Female'];
+
+const TreatmentDataEntry = ({ onSubmit }) => {
+  const [formData, setFormData] = useState({
+    gender: '',
+    age: '',
+    diagnosis: '',
+    allergies: '',
+    customAllergy: ''
+  });
+
+  const handleInputChange = (key, value) => {
+    setFormData((prevData) => ({ ...prevData, [key]: value }));
+  };
 
   const handleSubmit = () => {
-    if (!diagnosis || !allergies) {
-      Alert.alert('Error', 'Please select both diagnosis and allergies.');
+    if (!formData.gender || !formData.age || !formData.diagnosis || !formData.allergies) {
+      Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
-    onSubmit({ diagnosis, allergies: allergies === 'Other' ? customAllergy : allergies });
+    onSubmit({ ...formData, allergies: formData.allergies === 'Other' ? formData.customAllergy : formData.allergies });
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Card containerStyle={styles.card}>
-        <Text style={styles.header}>Patient Data Entry</Text>
+        <Text style={styles.header}>Treatment Data Entry</Text>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Gender:</Text>
+          <ToggleButton
+            options={genderOptions}
+            selected={formData.gender}
+            onSelect={(value) => handleInputChange('gender', value)}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Age:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter age..."
+            value={formData.age}
+            onChangeText={(text) => handleInputChange('age', text)}
+            keyboardType="numeric"
+          />
+        </View>
 
         <View style={styles.pickerContainer}>
           <Text style={styles.label}>Diagnosis:</Text>
           <Picker
-            selectedValue={diagnosis}
+            selectedValue={formData.diagnosis}
             style={styles.picker}
-            onValueChange={(itemValue) => setDiagnosis(itemValue)}
+            onValueChange={(itemValue) => handleInputChange('diagnosis', itemValue)}
           >
             <Picker.Item label="Select a diagnosis" value="" />
             {diagnosisOptions.map((option) => (
@@ -58,12 +89,12 @@ const PatientDataEntry = ({ onSubmit }) => {
         <View style={styles.pickerContainer}>
           <Text style={styles.label}>Allergies:</Text>
           <Picker
-            selectedValue={allergies}
+            selectedValue={formData.allergies}
             style={styles.picker}
             onValueChange={(itemValue) => {
-              setAllergies(itemValue);
+              handleInputChange('allergies', itemValue);
               if (itemValue !== 'Other') {
-                setCustomAllergy(''); // Clear custom allergy input if predefined option is selected
+                handleInputChange('customAllergy', ''); // Clear custom allergy input if predefined option is selected
               }
             }}
           >
@@ -73,12 +104,12 @@ const PatientDataEntry = ({ onSubmit }) => {
             ))}
             <Picker.Item label="Other" value="Other" />
           </Picker>
-          {allergies === 'Other' && (
+          {formData.allergies === 'Other' && (
             <TextInput
               style={styles.input}
               placeholder="Please specify"
-              value={customAllergy}
-              onChangeText={setCustomAllergy}
+              value={formData.customAllergy}
+              onChangeText={(text) => handleInputChange('customAllergy', text)}
             />
           )}
         </View>
@@ -103,6 +134,10 @@ const styles = StyleSheet.create({
     padding: 15,
     backgroundColor: '#ffffff',
     marginBottom: 15,
+    shadowColor: '#00000020',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
   header: {
     fontSize: 20,
@@ -110,13 +145,16 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: '#333',
   },
-  pickerContainer: {
+  inputContainer: {
     marginBottom: 15,
   },
   label: {
     fontSize: 16,
     color: '#555',
     marginBottom: 5,
+  },
+  pickerContainer: {
+    marginBottom: 15,
   },
   picker: {
     height: 50,
@@ -148,4 +186,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PatientDataEntry;
+export default TreatmentDataEntry;
