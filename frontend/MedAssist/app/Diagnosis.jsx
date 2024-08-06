@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import DiseaseList from '../components/DiseaseList';
 import DiseaseDataEntry from '../components/DiseaseDataEntry';
 
@@ -16,19 +16,19 @@ const Diagnosis = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
       {selectedDisease ? (
         <DiseaseDataEntry disease={selectedDisease} onSubmit={handleSymptomDataSubmit} />
       ) : (
         <DiseaseList onDiseaseSelect={handleDiseaseSelect} />
       )}
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     backgroundColor: '#f0f0f0',
     padding: 10,
   },

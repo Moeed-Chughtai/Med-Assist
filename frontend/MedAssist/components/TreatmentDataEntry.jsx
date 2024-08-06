@@ -10,7 +10,7 @@ const diagnosisOptions = [
   'Asthma',
   'COVID-19',
   'Malaria',
-  // Add more diagnosis options here
+  // Add diagnosis
 ];
 
 const allergyOptions = [
@@ -21,7 +21,7 @@ const allergyOptions = [
   'Wheat',
   'Soy',
   'None',
-  // Add more allergy options here
+  // Add allergy
 ];
 
 const genderOptions = ['Male', 'Female'];
@@ -94,7 +94,7 @@ const TreatmentDataEntry = ({ onSubmit }) => {
             onValueChange={(itemValue) => {
               handleInputChange('allergies', itemValue);
               if (itemValue !== 'Other') {
-                handleInputChange('customAllergy', ''); // Clear custom allergy input if predefined option is selected
+                handleInputChange('customAllergy', '');
               }
             }}
           >

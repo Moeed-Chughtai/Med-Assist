@@ -29,7 +29,6 @@ const ImageUploader = () => {
   };
 
   const handleCalculate = () => {
-    // Implement the calculate logic here
     Alert.alert('Calculation Result', `Selected Option: ${selectedOption}`);
   };
 
