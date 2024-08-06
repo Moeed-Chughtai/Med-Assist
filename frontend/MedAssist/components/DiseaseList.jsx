@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { Card, Button, Icon } from 'react-native-elements';
+import { Card, Button } from 'react-native-elements';
+import DiseaseDataEntry from './DiseaseDataEntry'; // Make sure this file exists
 
 const diseases = [
   { id: '1', name: 'Cirrhosis', image: 'https://via.placeholder.com/100' },
@@ -11,7 +12,7 @@ const diseases = [
   { id: '6', name: 'Body Fat', image: 'https://via.placeholder.com/100' }
 ];
 
-const DiseaseList = () => {
+const DiseaseList = ({ onDiseaseSelect }) => {
   const [search, setSearch] = useState('');
   const [filteredDiseases, setFilteredDiseases] = useState(diseases);
 
@@ -32,6 +33,7 @@ const DiseaseList = () => {
         <Button
           title="CHECK"
           buttonStyle={styles.button}
+          onPress={() => onDiseaseSelect(item)} // Trigger disease selection
         />
       </View>
     </Card>
@@ -55,7 +57,7 @@ const DiseaseList = () => {
   );
 };
 
-const styles = StyleSheet.create ({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
