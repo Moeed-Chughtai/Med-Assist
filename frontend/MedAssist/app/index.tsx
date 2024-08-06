@@ -1,18 +1,13 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet, ScrollView } from 'react-native';
-import SymptomDataEntry from '../components/SymptomDataEntry';
+import Account from './Account';
+import Header from '../components/Header';
 
 const App = () => {
-  // Function to handle form submission
-  const handleDataSubmit = (data) => {
-    console.log('Submitted Data:', data);
-  };
-
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <SymptomDataEntry onSubmit={handleDataSubmit} />
-      </ScrollView>
+      <Header onMenuPress={undefined} onNotificationPress={undefined} />
+      <Account />
     </SafeAreaView>
   );
 };
