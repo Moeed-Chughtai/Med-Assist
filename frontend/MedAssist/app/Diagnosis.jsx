@@ -1,36 +1,53 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
-import DiseaseList from '../components/DiseaseList';
-import DiseaseDataEntry from '../components/DiseaseDataEntry';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import SymptomDataEntry from '../components/SymptomDataEntry';
 
 const Diagnosis = () => {
-  const [selectedDisease, setSelectedDisease] = useState(null);
-
-  const handleDiseaseSelect = (disease) => {
-    setSelectedDisease(disease);
-  };
+  const [diagnosisResult, setDiagnosisResult] = useState(null);
 
   const handleSymptomDataSubmit = (formData) => {
-    console.log('Form Data:', formData);
-    setSelectedDisease(null);
+    console.log(formData);
   };
 
   return (
-    <View style={styles.container}>
-      {selectedDisease ? (
-        <DiseaseDataEntry disease={selectedDisease} onSubmit={handleSymptomDataSubmit} />
-      ) : (
-        <DiseaseList onDiseaseSelect={handleDiseaseSelect} />
+    <ScrollView contentContainerStyle={styles.container}>
+      <SymptomDataEntry onSubmit={handleSymptomDataSubmit} />
+      {diagnosisResult && (
+        <View style={styles.resultContainer}>
+          <Text style={styles.resultHeader}>Diagnosis Result:</Text>
+          <Text style={styles.resultText}>{JSON.stringify(diagnosisResult, null, 2)}</Text>
+        </View>
       )}
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#f0f0f0',
-    padding: 10,
+    flexGrow: 1,
+    padding: 15,
+    backgroundColor: '#f9f9f9',
+  },
+  resultContainer: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    elevation: 3,
+    shadowColor: '#00000020',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  resultHeader: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 10,
+    color: '#333',
+  },
+  resultText: {
+    fontSize: 16,
+    color: '#555',
   },
 });
 

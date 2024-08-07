@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import classifyIcon from '../assets/icons/classify.png';
+import diagnosisIcon from '../assets/icons/diagnosis.png';
+import testIcon from '../assets/icons/test.png';
 import aidIcon from '../assets/icons/aid.png';
 import uploadIcon from '../assets/icons/upload.png';
 import userIcon from '../assets/icons/user.png';
@@ -12,8 +13,12 @@ const Footer = () => {
   return (
     <View style={styles.footerContainer}>
       <TouchableOpacity style={styles.menuButton} onPress={() => router.push('/Diagnosis')}>
-        <Image source={classifyIcon} style={styles.menuIcon} />
+        <Image source={diagnosisIcon} style={styles.menuIcon} />
         <Text style={styles.menuText}>Diagnosis</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.menuButton} onPress={() => router.push('/Tests')}>
+        <Image source={testIcon} style={styles.menuIcon} />
+        <Text style={styles.menuText}>Tests</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.menuButton} onPress={() => router.push('/Treatment')}>
         <Image source={aidIcon} style={styles.menuIcon} />
