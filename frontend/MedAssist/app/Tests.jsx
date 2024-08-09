@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import DiseaseList from '../components/DiseaseList';
 import DiseaseDataEntry from '../components/DiseaseDataEntry';
 
@@ -11,8 +11,8 @@ const Diagnosis = () => {
   };
 
   const handleSymptomDataSubmit = (formData) => {
-    console.log('Form Data:', formData);
-    setSelectedDisease(null);
+    Alert.alert('Data Submitted', 'Form data has been submitted successfully.');
+    setSelectedDisease(null); // Resetting to show the disease list
   };
 
   return (

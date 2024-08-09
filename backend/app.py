@@ -14,11 +14,17 @@ app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD')
 app.config['MYSQL_DB'] = os.getenv('MYSQL_DB')
 mysql = MySQL(app)
 
+# Load models and preprocessors
 cirrhosis_model = joblib.load('./trained_models/cirrhosis_model.pkl')
 cirrhosis_preprocessor = joblib.load('./trained_models/cirrhosis_preprocessor.pkl')
+bodyfat_model = joblib.load('./trained_models/bodyfat_model.pkl')
+bodyfat_preprocessor = joblib.load('./trained_models/bodyfat_preprocessor.pkl')
+heartfailure_model = joblib.load('./trained_models/heartfailure_model.pkl')
+heartfailure_preprocessor = joblib.load('./trained_models/heartfailure_preprocessor.pkl')
+hepatitis_model = joblib.load('./trained_models/hepatitis_model.pkl')
+hepatitis_preprocessor = joblib.load('./trained_models/hepatitis_preprocessor.pkl')
 
-
-## Get all patient names
+# Get all patient names
 @app.route('/patients', methods=['GET'])
 def get_users():
     cur = mysql.connection.cursor()
@@ -29,7 +35,7 @@ def get_users():
     names_list = [name[0] for name in names]
     return jsonify(names_list)
 
-## Prediction for cirrhosis
+# Prediction for cirrhosis
 @app.route('/predict/cirrhosis', methods=['POST'])
 def predict_cirrhosis():
     data = request.json
@@ -42,9 +48,10 @@ def predict_cirrhosis():
     print(f"Input DataFrame columns: {df.columns.tolist()}")
     print(f"Input DataFrame shape: {df.shape}")
 
-    #X_processed = cirrhosis_preprocessor.transform(df)
+    ##X_processed = cirrhosis_preprocessor.transform(df)
     predictions = cirrhosis_model.predict(df)
     return jsonify(predictions.tolist())
+
 
 
 if __name__ == '__main__':

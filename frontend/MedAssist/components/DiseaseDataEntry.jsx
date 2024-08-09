@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { Card } from 'react-native-elements';
 import ToggleButton from './ToggleButton';
 
@@ -13,7 +13,23 @@ const diseaseFields = {
     { label: 'HbA1c Level', key: 'hba1cLevel' },
     { label: 'Blood Glucose Level', key: 'bloodGlucoseLevel' }
   ],
-  // Other diseases...
+  'Cirrhosis': [
+    { label: 'Age', key: 'Age', type: 'number' },
+    { label: 'Sex', key: 'Sex', options: ['M', 'F'] },
+    { label: 'Ascites', key: 'Ascites', options: ['Y', 'N'] },
+    { label: 'Hepatomegaly', key: 'Hepatomegaly', options: ['Y', 'N'] },
+    { label: 'Spiders', key: 'Spiders', options: ['Y', 'N'] },
+    { label: 'Edema', key: 'Edema', options: ['Y', 'N'] },
+    { label: 'Bilirubin', key: 'Bilirubin', type: 'number' },
+    { label: 'Cholesterol', key: 'Cholesterol', type: 'number' },
+    { label: 'Albumin', key: 'Albumin', type: 'number' },
+    { label: 'Copper', key: 'Copper', type: 'number' },
+    { label: 'Alk Phosphate', key: 'Alk_Phos', type: 'number' },
+    { label: 'SGOT', key: 'SGOT', type: 'number' },
+    { label: 'Tryglicerides', key: 'Tryglicerides', type: 'number' },
+    { label: 'Platelets', key: 'Platelets', type: 'number' },
+    { label: 'Prothrombin', key: 'Prothrombin', type: 'number' }
+  ]
 };
 
 const DiseaseDataEntry = ({ disease, onSubmit }) => {
@@ -23,56 +39,81 @@ const DiseaseDataEntry = ({ disease, onSubmit }) => {
       return acc;
     }, {})
   );
+  const [responseMessage, setResponseMessage] = useState('');
 
   const handleInputChange = (key, value) => {
     setFormData((prevData) => ({ ...prevData, [key]: value }));
   };
 
-  const handleSubmit = () => {
-    const emptyFields = Object.values(formData).some(value => value.trim() === '');
+  const handleSubmit = async () => {
+    // Convert numeric fields to numbers
+    const processedData = Object.keys(formData).reduce((acc, key) => {
+      const field = diseaseFields[disease.name]?.find(field => field.key === key);
+      acc[key] = field?.type === 'number' ? parseFloat(formData[key]) || 0 : formData[key];
+      return acc;
+    }, {});
+  
+    // Check for empty fields
+    const emptyFields = Object.values(processedData).some(value => value === '' || value === 0);
     if (emptyFields) {
       Alert.alert('Error', 'Please fill in all the fields.');
       return;
     }
-    onSubmit(formData);
-    setFormData(
-      diseaseFields[disease.name]?.reduce((acc, field) => {
-        acc[field.key] = '';
-        return acc;
-      }, {})
-    );
+  
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/predict/${disease.name.toLowerCase()}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify([processedData]),
+      });
+  
+      const result = await response.json();
+      setResponseMessage(`Prediction: ${result[0]}`); // Assuming the prediction is the first item in the response array
+  
+      // Optionally call onSubmit() with the form data if you need it in the parent component
+      onSubmit(processedData);
+    } catch (error) {
+      Alert.alert('Error', 'An error occurred while submitting the data.');
+      console.error(error);
+    }
   };
+  
 
   return (
     <Card containerStyle={styles.card}>
-      <Text style={styles.header}>Enter Medical Data for {disease.name}</Text>
-      {diseaseFields[disease.name]?.map((field) => (
-        <View key={field.key} style={styles.inputContainer}>
-          {field.options ? (
-            <>
-              <Text style={styles.label}>{field.label}:</Text>
-              <ToggleButton
-                options={field.options}
-                selected={formData[field.key]}
-                onSelect={(value) => handleInputChange(field.key, value)}
-              />
-            </>
-          ) : (
-            <>
-              <Text style={styles.label}>{field.label}:</Text>
-              <TextInput
-                style={styles.input}
-                placeholder={`Enter ${field.label.toLowerCase()}...`}
-                value={formData[field.key]}
-                onChangeText={(text) => handleInputChange(field.key, text)}
-              />
-            </>
-          )}
-        </View>
-      ))}
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Submit Data</Text>
-      </TouchableOpacity>
+      <ScrollView contentContainerStyle={styles.scrollView}>
+        <Text style={styles.header}>Enter Medical Data for {disease.name}</Text>
+        {diseaseFields[disease.name]?.map((field) => (
+          <View key={field.key} style={styles.inputContainer}>
+            {field.options ? (
+              <>
+                <Text style={styles.label}>{field.label}:</Text>
+                <ToggleButton
+                  options={field.options}
+                  selected={formData[field.key]}
+                  onSelect={(value) => handleInputChange(field.key, value)}
+                />
+              </>
+            ) : (
+              <>
+                <Text style={styles.label}>{field.label}:</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder={`Enter ${field.label.toLowerCase()}...`}
+                  value={formData[field.key]}
+                  onChangeText={(text) => handleInputChange(field.key, text)}
+                />
+              </>
+            )}
+          </View>
+        ))}
+        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+          <Text style={styles.buttonText}>Submit Data</Text>
+        </TouchableOpacity>
+        {responseMessage ? <Text style={styles.response}>{responseMessage}</Text> : null}
+      </ScrollView>
     </Card>
   );
 };
@@ -88,6 +129,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
+  },
+  scrollView: {
+    flexGrow: 1,
   },
   header: {
     fontSize: 20,
@@ -118,11 +162,18 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 15,
     alignSelf: 'flex-start',
+    marginTop: 10,
   },
   buttonText: {
     color: '#ffffff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  response: {
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#007bff',
   },
 });
 
