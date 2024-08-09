@@ -26,25 +26,47 @@ const allergyOptions = [
 
 const genderOptions = ['Male', 'Female'];
 
-const TreatmentDataEntry = ({ onSubmit }) => {
+const TreatmentDataEntry = () => {
   const [formData, setFormData] = useState({
     gender: '',
     age: '',
     diagnosis: '',
     allergies: '',
-    customAllergy: ''
+    customAllergy: '',
   });
+  const [prediction, setPrediction] = useState('');
 
   const handleInputChange = (key, value) => {
     setFormData((prevData) => ({ ...prevData, [key]: value }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!formData.gender || !formData.age || !formData.diagnosis || !formData.allergies) {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
-    onSubmit({ ...formData, allergies: formData.allergies === 'Other' ? formData.customAllergy : formData.allergies });
+
+    const data = {
+      ...formData,
+      allergies: formData.allergies === 'Other' ? formData.customAllergy : formData.allergies
+    };
+
+    try {
+      console.log(JSON.stringify(data))
+      const response = await fetch('http://127.0.0.1:5000/predict/treatment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+      setPrediction(result.predicted_treatment);
+    } catch (error) {
+      console.error('Error:', error);
+      Alert.alert('Error', 'Failed to get prediction.');
+    }
   };
 
   return (
@@ -117,6 +139,12 @@ const TreatmentDataEntry = ({ onSubmit }) => {
         <TouchableOpacity style={styles.button} onPress={handleSubmit}>
           <Text style={styles.buttonText}>Submit Data</Text>
         </TouchableOpacity>
+
+        {prediction ? (
+          <View style={styles.predictionContainer}>
+            <Text style={styles.predictionText}>Predicted Treatment: {prediction}</Text>
+          </View>
+        ) : null}
       </Card>
     </ScrollView>
   );
@@ -179,9 +207,17 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   buttonText: {
-    color: '#ffffff',
+    color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  predictionContainer: {
+    marginTop: 20,
+  },
+  predictionText: {
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#333',
   },
 });
 

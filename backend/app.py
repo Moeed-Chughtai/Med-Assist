@@ -23,6 +23,10 @@ heartfailure_model = joblib.load('./trained_models/heartfailure_model.pkl')
 heartfailure_preprocessor = joblib.load('./trained_models/heartfailure_preprocessor.pkl')
 hepatitis_model = joblib.load('./trained_models/hepatitis_model.pkl')
 hepatitis_preprocessor = joblib.load('./trained_models/hepatitis_preprocessor.pkl')
+treatment_model = joblib.load('./trained_models/treatment_model.pkl')
+scaler = joblib.load('./trained_models/scaler.pkl')
+svd = joblib.load('./trained_models/svd.pkl')
+label_encoders = joblib.load('./trained_models/label_encoders.pkl')
 
 # Get all patient names
 @app.route('/patients', methods=['GET'])
@@ -51,6 +55,40 @@ def predict_cirrhosis():
     ##X_processed = cirrhosis_preprocessor.transform(df)
     predictions = cirrhosis_model.predict(df)
     return jsonify(predictions.tolist())
+
+# Prediction for treatment
+@app.route('/predict', methods=['POST'])
+def predict():
+    data = request.json
+
+    # Convert to DataFrame
+    df = pd.DataFrame([data])
+
+    # Encode categorical variables
+    for column, encoder in label_encoders.items():
+        if column in df.columns:
+            df[column] = encoder.transform(df[column])
+
+    # Create age bin
+    df['Age_Bin'] = pd.cut(df['Age'], bins=[0, 18, 35, 50, 65, 100], labels=[0, 1, 2, 3, 4])
+
+    # Create interaction matrix for SVD
+    interaction_matrix = pd.DataFrame(index=df['PatientID'])
+    patient_features = svd.transform(interaction_matrix)
+    patient_feature_df = pd.DataFrame(patient_features, index=interaction_matrix.index)
+    df = pd.merge(df, patient_feature_df, left_on='PatientID', right_index=True)
+
+    # Drop unnecessary columns
+    df = df.drop(['Treatment', 'PatientID', 'Notes'], axis=1)
+
+    # Normalize the features
+    X_scaled = scaler.transform(df)
+
+    # Make prediction
+    prediction = treatment_model.predict(X_scaled)
+    prediction_label = label_encoders['Treatment'].inverse_transform(prediction)
+
+    return jsonify({'predicted_treatment': prediction_label[0]})
 
 
 
