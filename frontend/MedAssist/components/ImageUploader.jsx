@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { useNavigation } from '@react-navigation/native'; // For navigation
 import ToggleButton from './ToggleButton';
 
 const ImageUploader = () => {
   const [imageUri, setImageUri] = useState('');
   const [selectedOption, setSelectedOption] = useState('');
   const toggleOptions = ['Brain Scan', 'Chest X-ray', 'Blood Test'];
+  const navigation = useNavigation(); // Use navigation
 
   const handleImagePick = async () => {
-    // Ask for permission to access media library
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
@@ -17,7 +18,6 @@ const ImageUploader = () => {
       return;
     }
 
-    // Open image picker
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1,
@@ -25,11 +25,30 @@ const ImageUploader = () => {
 
     if (!result.canceled) {
       setImageUri(result.assets[0].uri);
-    }
-  };
 
-  const handleCalculate = () => {
-    Alert.alert('Calculation Result', `Selected Option: ${selectedOption}`);
+      // Upload the image and get the prediction
+      const formData = new FormData();
+      formData.append('image', {
+        uri: result.assets[0].uri,
+        type: 'image/jpg',
+        name: 'photo.jpg',
+      });
+
+      try {
+        const response = await fetch('http://127.0.0.1:5000/predict/tumour', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        const data = await response.json();
+        navigation.navigate('ResultScreen', { result: data });
+      } catch (error) {
+        Alert.alert('Error', 'Failed to upload image and get prediction');
+      }
+    }
   };
 
   return (
@@ -48,7 +67,7 @@ const ImageUploader = () => {
         selected={selectedOption}
         onSelect={(option) => setSelectedOption(option)}
       />
-      <TouchableOpacity style={styles.calculateButton} onPress={handleCalculate}>
+      <TouchableOpacity style={styles.calculateButton} onPress={() => handleImagePick()}>
         <Text style={styles.calculateButtonText}>Calculate</Text>
       </TouchableOpacity>
     </View>

@@ -84,10 +84,9 @@ def predict():
     patient_feature_df = pd.DataFrame(patient_features, index=interaction_matrix.index)
     df = pd.merge(df, patient_feature_df, left_on='PatientID', right_index=True)
 
-    # Drop unnecessary columns
     df = df.drop(['Treatment', 'PatientID', 'Notes'], axis=1)
 
-    # Normalize the features
+    # Normalise the features
     X_scaled = scaler.transform(df)
 
     # Make prediction
@@ -109,20 +108,17 @@ def predict_tumor():
     if image is None:
         return jsonify({'error': 'Unable to read image'}), 400
 
-    image = cv2.resize(image, (224, 224))  # Resize image to match model input size
-    image = np.expand_dims(image, axis=0)  # Add batch dimension
-    image = image / 255.0  # Normalize image
+    image = cv2.resize(image, (224, 224))
+    image = np.expand_dims(image, axis=0)
+    image = image / 255.0  # Normalise image
     
-    # Make prediction
     predictions = tumour_model.predict(image)
     
-    # Assuming your model outputs probabilities for classes, get the class with the highest probability
+    # Get the class with the highest probability
     class_id = np.argmax(predictions, axis=1)[0]
     
-    # You can return the class ID or any other relevant information
     return jsonify({'predicted_class': int(class_id), 'probabilities': predictions.tolist()})
 
 
 if __name__ == '__main__':
     app.run(debug=True)
-    
