@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 import os
 import joblib
 import pandas as pd
+import numpy as np
+import cv2
 
 load_dotenv()
 app = Flask(__name__)
@@ -27,6 +29,8 @@ treatment_model = joblib.load('./trained_models/treatment_model.pkl')
 scaler = joblib.load('./trained_models/scaler.pkl')
 svd = joblib.load('./trained_models/svd.pkl')
 label_encoders = joblib.load('./trained_models/label_encoders.pkl')
+tumour_model = joblib.load('./trained_models/tumour_model.keras')
+
 
 # Get all patient names
 @app.route('/patients', methods=['GET'])
@@ -38,6 +42,7 @@ def get_users():
 
     names_list = [name[0] for name in names]
     return jsonify(names_list)
+
 
 # Prediction for cirrhosis
 @app.route('/predict/cirrhosis', methods=['POST'])
@@ -55,6 +60,7 @@ def predict_cirrhosis():
     ##X_processed = cirrhosis_preprocessor.transform(df)
     predictions = cirrhosis_model.predict(df)
     return jsonify(predictions.tolist())
+
 
 # Prediction for treatment
 @app.route('/predict', methods=['POST'])
@@ -90,7 +96,33 @@ def predict():
 
     return jsonify({'predicted_treatment': prediction_label[0]})
 
+## Prediction for tumour
+@app.route('/predict/tumour', methods=['POST'])
+def predict_tumor():
+    if 'image' not in request.files:
+        return jsonify({'error': 'No image provided'}), 400
+
+    image_file = request.files['image']
+    
+    # Read and preprocess the image
+    image = cv2.imdecode(np.fromstring(image_file.read(), np.uint8), cv2.IMREAD_COLOR)
+    if image is None:
+        return jsonify({'error': 'Unable to read image'}), 400
+
+    image = cv2.resize(image, (224, 224))  # Resize image to match model input size
+    image = np.expand_dims(image, axis=0)  # Add batch dimension
+    image = image / 255.0  # Normalize image
+    
+    # Make prediction
+    predictions = tumour_model.predict(image)
+    
+    # Assuming your model outputs probabilities for classes, get the class with the highest probability
+    class_id = np.argmax(predictions, axis=1)[0]
+    
+    # You can return the class ID or any other relevant information
+    return jsonify({'predicted_class': int(class_id), 'probabilities': predictions.tolist()})
 
 
 if __name__ == '__main__':
     app.run(debug=True)
+    
